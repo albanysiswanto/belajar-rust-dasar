@@ -377,7 +377,7 @@ fn ownership_movement() {
 
     let name2: String = name1; // ownerhsip pindah ke name2
     println!("{}", name2);
-    // println!("{}", name1);
+    // println!("name {}", name1);
 }
 
 /*
@@ -625,4 +625,92 @@ fn factorial_recursive(n: u32) -> u32 {
 fn test_factorial_recursive() {
     let result = factorial_recursive(5);
     println!("{}", result);
+}
+
+// stack
+fn print_number(number: i32) {
+    println!("number {}", number);
+}
+
+// heap
+fn hi(name: String) {
+    println!("name {}", name);
+}
+
+#[test]
+fn test_hi() {
+    let number = 10;
+    print_number(number); // print_number(10)
+    println!("{}", number);
+
+    let name = String::from("Eko");
+    hi(name);
+    // println!("{}", name);
+}
+
+/*
+Return Value Ownership
+Seperti yang sudah kita tahu, bahwa function bisa mengembalikan value
+Value Heap yang kita kembalikan di function, secara otomatis ownership nya akan dimiliki oleh yang memanggil function tersebut
+Sedangkan jika Value Stack, maka return value function akan di copy oleh yang memanggil function nya
+*/
+fn full_name(first_name: &String, last_name: &String) -> String {
+    format!("{} {}", first_name, last_name)
+}
+
+#[test]
+fn test_full_name() {
+    let first_name = String::from("Albany");
+    let last_name = String::from("Siswanto");
+
+    let full_name = full_name(&first_name, &last_name); // Menggunakan References
+
+    println!("{}", full_name);
+    println!("{}", first_name);
+    println!("{}", last_name);
+}
+
+/*
+Borrowing
+Ketika kita membuat reference, aksi itu kita sebut borrowing (meminjam).
+Kalo diibaratkan di kehidupan, kita bisa meminjam barang, tapi jika sudah selesai menggunakan barang nya, kita harus mengembalikan ke owner (pemilik) barang nya
+Saat kita mencoba memodifikasi value dari reference, maka secara default, hal itu tidak bisa dilakukan, jadi secara default reference adalah immutable, walaupun variable owner nya sendiri adalah mutable
+*/
+fn change_value(value: &mut String) {
+    value.push_str("Test");
+}
+
+#[test]
+fn test_change_value() {
+    let mut value = String::from("Eko");
+
+    let value_borrow = &mut value; // Mutable Reference (ownernya harus mutable)
+
+    change_value(value_borrow);
+    change_value(value_borrow);
+    change_value(value_borrow);
+
+    println!("{}", value);
+}
+
+/*
+Solusi Dangling Pointer
+Jika menang data yang dikembalikan dibuat di dalam function, maka kita harus kembalikan dalam bentuk value langsung, bukan reference
+Atau kita bisa mengeluarkan variable owner dari value diluar function, agar masuk variable scope, sehingga Rust tidak menghapus variable dan value tersebut setelah function selesai di eksekusi
+*/
+fn get_full_name(first_name: &String, last_name: &String) -> String {
+    let name = format!("{} {}", first_name, last_name);
+    return name;
+}
+
+#[test]
+fn test_get_full_name() {
+    let first_name = String::from("Albany");
+    let last_name = String::from("Siswanto");
+
+    let full_name = get_full_name(&first_name, &last_name);
+
+    println!("{}", full_name);
+    println!("{}", first_name);
+    println!("{}", last_name);
 }
