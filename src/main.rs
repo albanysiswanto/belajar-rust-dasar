@@ -714,3 +714,104 @@ fn test_get_full_name() {
     println!("{}", first_name);
     println!("{}", last_name);
 }
+
+#[test]
+fn slice_reference() {
+    let array: [i32; 10] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    let slice1: &[i32] = &array[..];
+    println!("{:?}", slice1);
+
+    let slice2: &[i32] = &array[0..5];
+    println!("{:?}", slice2);
+
+    let slice3: &[i32] = &array[5..];
+    println!("{:?}", slice3);
+}
+
+#[test]
+fn string_slice() {
+    let name = String::from("Albany Siswanto");
+
+    let first_name: &str = &name[0..=5];
+    println!("{}", first_name);
+
+    let last_name: &str = &name[6..];
+    println!("{}", last_name);
+}
+
+struct Person {
+    first_name: String,
+    middle_name: String,
+    last_name: String,
+    age: u8,
+}
+
+// impl Person {
+//     fn say_hello(&self, name: &str) {
+//         println!("Hello {}, my name is {}", name, self.first_name);
+//     }
+// }
+
+fn print_person(person: &Person) {
+    println!("{}", person.first_name);
+    println!("{}", person.middle_name);
+    println!("{}", person.last_name);
+    println!("{}", person.age);
+}
+
+#[test]
+fn test_struct_person() {
+    let first_name = String::from("Eko");
+    let last_name = String::from("Khannedy");
+
+    let person: Person = Person {
+        age: 20,
+        first_name,
+        middle_name: String::from("Kurniawan"),
+        last_name,
+    };
+
+    print_person(&person);
+
+    let person2 = Person {
+        first_name: person.first_name.clone(),
+        middle_name: person.middle_name.clone(),
+        last_name: person.last_name.clone(),
+        ..person // Memindahkan Ownership(Update Syntax di Struct)
+    };
+
+    print_person(&person2);
+
+    println!("{}", person.first_name);
+}
+
+struct GeoPoint(f64, f64);
+
+impl GeoPoint {
+    fn new(long: f64, lat: f64) -> GeoPoint {
+        GeoPoint(long, lat)
+    }
+}
+
+#[test]
+fn test_associated_function() {
+    let geo_point: GeoPoint = GeoPoint::new(10.0, 10.0);
+    println!("{}", geo_point.0);
+    println!("{}", geo_point.1);
+}
+
+#[test]
+fn tuple_struct() {
+    let geo_point = GeoPoint(-6.23223, 100.23232);
+    println!("{}", geo_point.0);
+    println!("{}", geo_point.1);
+}
+
+struct Nothing;
+
+#[test]
+fn test_nothing() {
+    let _nothing1: Nothing = Nothing; // Jika tidak niat digunakan tambahkan _(garis bawah) agar tidak memunculkan warning
+    let _nothing2: Nothing = Nothing {};
+}
