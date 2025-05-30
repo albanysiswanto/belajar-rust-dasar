@@ -1178,3 +1178,135 @@ trait CanSay: CanSayHello + CanSayGoodBye {
         println!("{}", self.good_bye());
     }
 }
+
+struct Point<T = i32> {
+    x: T,
+    y: T,
+}
+
+impl<T> Point<T> {
+    fn get_x(&self) -> &T {
+        &self.x
+    }
+
+    fn get_y(&self) -> &T {
+        &self.y
+    }
+}
+
+#[test]
+fn test_generic_struct() {
+    let integer: Point<i32> = Point::<i32> { x: 1, y: 2 };
+    let float: Point<f64> = Point::<f64> { x: 1.0, y: 2.0 };
+
+    println!("{} {}", integer.x, integer.y);
+    println!("{} {}", float.x, float.y);
+}
+
+enum Value<T> {
+    NONE,
+    VALUE(T),
+}
+
+#[test]
+fn test_generic_enum() {
+    let value: Value<i32> = Value::<i32>::VALUE(10);
+
+    match value {
+        Value::NONE => {
+            println!("none")
+        }
+        Value::VALUE(value) => {
+            println!("value {}", value)
+        }
+    }
+}
+
+struct Hi<T = SimplePerson>
+where
+    T: CanSayGoodBye,
+{
+    value: T,
+}
+
+#[test]
+fn test_generic_bound() {
+    let hi = Hi::<SimplePerson> {
+        value: SimplePerson {
+            name: String::from("Eko"),
+        },
+    };
+    println!("{}", hi.value.name);
+}
+
+fn min<T>(value1: T, value2: T) -> T
+where
+    T: PartialOrd,
+{
+    if value1 < value2 { value1 } else { value2 }
+}
+
+#[test]
+fn generic_in_function() {
+    let result = min::<i32>(10, 20);
+    println!("{}", result);
+
+    let result = min(20.0, 10.0);
+    println!("{}", result);
+}
+
+#[test]
+fn test_generic_method() {
+    let point = Point { x: 10, y: 20 };
+    println!("{}", point.get_x());
+    println!("{}", point.get_y());
+    println!("{}", point.get_value());
+}
+
+trait GetValue<T>
+where
+    T: PartialOrd,
+{
+    fn get_value(&self) -> &T;
+}
+
+impl<T> GetValue<T> for Point<T>
+where
+    T: PartialOrd,
+{
+    fn get_value(&self) -> &T {
+        &self.x
+    }
+}
+
+use core::ops::Add;
+
+struct Apple {
+    quantity: i32,
+}
+
+impl Add for Apple {
+    type Output = Apple;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Apple {
+            quantity: self.quantity + rhs.quantity,
+        }
+    }
+}
+
+fn double(value: Option<i32>) -> Option<i32> {
+    match value {
+        None => None,
+        Some(i) => Some(i * 2),
+    }
+}
+
+#[test]
+fn test_option() {
+    let result = double(Some(10));
+    println!("{:?}", result);
+
+    let result = double(None);
+    println!("{:?}", result);
+}
