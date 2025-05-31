@@ -1280,6 +1280,8 @@ where
 }
 
 use core::ops::Add;
+use std::cmp::Ordering;
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, LinkedList, VecDeque};
 
 struct Apple {
     quantity: i32,
@@ -1309,4 +1311,621 @@ fn test_option() {
 
     let result = double(None);
     println!("{:?}", result);
+}
+
+impl PartialEq for Apple {
+    fn eq(&self, other: &Self) -> bool {
+        self.quantity == other.quantity
+    }
+}
+
+impl PartialOrd for Apple {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.quantity.partial_cmp(&other.quantity)
+    }
+}
+
+#[test]
+fn test_comparing() {
+    let apple1 = Apple { quantity: 10 };
+    let apple2 = Apple { quantity: 20 };
+
+    println!("Apple1 == Apple2 : {}", apple1 == apple2);
+    println!("Apple1 < Apple2 : {}", apple1 < apple2);
+    println!("Apple1 > Apple2 : {}", apple1 > apple2);
+}
+
+#[test]
+fn test_string_manipulation() {
+    let s = String::from("Eko Kurniawan Khannedy");
+
+    println!("{}", s.to_uppercase());
+    println!("{}", s.to_lowercase());
+    println!("{}", s.len());
+    println!("{}", s.replace("Eko", "Budi"));
+    println!("{}", s.contains("Khannedy"));
+    println!("{}", s.starts_with("Eko"));
+    println!("{}", s.ends_with("Khannedy"));
+    println!("{}", s.trim());
+    println!("{}", &s[0..3]);
+    println!("{:?}", s.get(0..3));
+}
+
+struct Category {
+    id: String,
+    name: String,
+}
+
+use std::fmt::{Debug, Formatter};
+
+impl Debug for Category {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Category")
+            .field("id", &self.id)
+            .field("name", &self.name)
+            .finish()
+    }
+}
+
+#[test]
+fn test_format() {
+    let category = Category {
+        name: String::from("Gadget"),
+        id: String::from("GADGET"),
+    };
+
+    println!("{:?}", category);
+}
+
+#[test]
+fn test_closure() {
+    let sum: fn(i32, i32) -> i32 = |value1: i32, value2: i32| -> i32 { value1 + value1 };
+
+    let result = sum(10, 10);
+    println!("{}", result);
+}
+
+fn print_with_filter(value: String, filter: fn(String) -> String) {
+    let result = filter(value);
+    println!("{}", result);
+}
+
+#[test]
+fn test_closure_as_parameter() {
+    let filter = |value: String| -> String { value.to_uppercase() };
+
+    print_with_filter(String::from("Eko"), filter);
+}
+
+fn to_uppercase(value: String) -> String {
+    value.to_uppercase()
+}
+
+#[test]
+fn test_function_as_closure() {
+    print_with_filter(String::from("Eko"), to_uppercase);
+}
+
+#[test]
+fn test_closure_scope() {
+    let mut counter = 0;
+
+    let mut increment = || {
+        counter += 1;
+        println!("Increment");
+    };
+
+    increment();
+    increment();
+    increment();
+
+    println!("Counter {}", counter);
+}
+
+struct Counter {
+    counter: i32,
+}
+
+impl Counter {
+    fn increment(&mut self) {
+        self.counter += 1;
+        println!("Increment")
+    }
+}
+
+#[test]
+fn test_counter() {
+    let mut counter = Counter { counter: 0 };
+    counter.increment();
+    counter.increment();
+    counter.increment();
+
+    println!("Counter {}", counter.counter);
+}
+
+#[test]
+fn test_vector() {
+    let array = ["Eko", "Kurniawan", "Khannedy"];
+
+    for value in array {
+        println!("{}", value);
+    }
+
+    println!("{:?}", array);
+
+    let mut names: Vec<String> = Vec::<String>::new();
+    names.push(String::from("Eko"));
+    names.push(String::from("Kurniawan"));
+    names.push(String::from("Khannedy"));
+
+    for name in &names {
+        println!("{}", name);
+    }
+
+    println!("{:?}", names);
+    println!("{}", names[0]);
+}
+
+#[test]
+fn test_vector_deque() {
+    let mut names: VecDeque<String> = VecDeque::<String>::new();
+    names.push_back(String::from("Eko"));
+    names.push_back(String::from("Kurniawan"));
+    names.push_front(String::from("Khannedy"));
+
+    for name in &names {
+        println!("{}", name);
+    }
+
+    println!("{}", names[1]);
+}
+
+#[test]
+fn test_linked_list() {
+    let mut names: LinkedList<String> = LinkedList::<String>::new();
+    names.push_back(String::from("Eko"));
+    names.push_back(String::from("Kurniawan"));
+    names.push_front(String::from("Khannedy"));
+
+    for name in &names {
+        println!("{}", name);
+    }
+}
+
+#[test]
+fn test_hash_map() {
+    let mut map: HashMap<String, String> = HashMap::new();
+    map.insert(String::from("name"), String::from("Eko"));
+    map.insert(String::from("age"), String::from("26"));
+    map.insert(String::from("country"), String::from("Indonesia"));
+    map.insert(String::from("zountry"), String::from("Indonesia"));
+    map.insert(String::from("xountry"), String::from("Indonesia"));
+
+    let name = map.get("name");
+    let age = map.get("age");
+
+    println!("Name {}", name.unwrap());
+    println!("Age {}", age.unwrap());
+
+    for entry in map {
+        println!("{} : {}", entry.0, entry.1);
+    }
+}
+
+#[test]
+fn test_btree_map() {
+    let mut map: BTreeMap<String, String> = BTreeMap::new();
+    map.insert(String::from("name"), String::from("Eko"));
+    map.insert(String::from("age"), String::from("26"));
+    map.insert(String::from("country"), String::from("Indonesia"));
+    map.insert(String::from("zountry"), String::from("Indonesia"));
+    map.insert(String::from("xountry"), String::from("Indonesia"));
+
+    for entry in map {
+        println!("{} : {}", entry.0, entry.1);
+    }
+}
+
+#[test]
+fn test_hash_set() {
+    let mut set: HashSet<String> = HashSet::new();
+    set.insert(String::from("Eko"));
+    set.insert(String::from("Eko"));
+    set.insert(String::from("Kurniawan"));
+    set.insert(String::from("Kurniawan"));
+    set.insert(String::from("Khannedy"));
+    set.insert(String::from("Khannedy"));
+
+    for value in set {
+        println!("{}", value);
+    }
+}
+
+#[test]
+fn test_btree_set() {
+    let mut set: BTreeSet<String> = BTreeSet::new();
+    set.insert(String::from("Eko"));
+    set.insert(String::from("Eko"));
+    set.insert(String::from("Kurniawan"));
+    set.insert(String::from("Kurniawan"));
+    set.insert(String::from("Khannedy"));
+    set.insert(String::from("Khannedy"));
+
+    for value in set {
+        println!("{}", value);
+    }
+}
+
+#[test]
+fn test_iterator() {
+    let array: [i32; 5] = [1, 2, 3, 4, 5];
+    let mut iterator = array.iter();
+
+    while let Some(value) = iterator.next() {
+        println!("{}", value);
+    }
+
+    for value in iterator {
+        println!("{}", value);
+    }
+}
+
+#[test]
+fn test_iterator_method() {
+    let vector: Vec<i32> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    println!("{:?}", vector);
+
+    let sum: i32 = vector.iter().sum();
+    println!("{}", sum);
+
+    let count: usize = vector.iter().count();
+    println!("{}", count);
+
+    let doubled: Vec<i32> = vector.iter().map(|x| x * 2).collect();
+    println!("{:?}", doubled);
+
+    let odd: Vec<&i32> = vector.iter().filter(|x| *x % 2 != 0).collect();
+    println!("{:?}", odd);
+}
+
+fn connect_database(host: Option<String>) {
+    match host {
+        None => {
+            panic!("No database host provided");
+        }
+        Some(host) => {
+            println!("Connecting to database {}", host);
+        }
+    }
+}
+
+#[test]
+fn test_panic() {
+    connect_database(Some(String::from("localhost")));
+    // connect_database(None);
+}
+
+fn connect_cache(host: Option<String>) -> Result<String, String> {
+    match host {
+        None => Err("No cache host provided".to_string()),
+        Some(host) => Ok(host),
+    }
+}
+
+fn connect_email(host: Option<String>) -> Result<String, String> {
+    match host {
+        None => Err("No email host provided".to_string()),
+        Some(host) => Ok(host),
+    }
+}
+
+fn connect_application(host: Option<String>) -> Result<String, String> {
+    connect_cache(host.clone())?;
+    connect_email(host.clone())?;
+    Ok("Connected to application".to_string())
+}
+
+#[test]
+fn test_application_error() {
+    let result = connect_application(None);
+    match result {
+        Ok(host) => {
+            println!("Success connect with message : {}", host)
+        }
+        Err(err) => {
+            println!("Error with message : {}", err)
+        }
+    }
+}
+
+#[test]
+fn test_recoverable_error() {
+    // let cache = connect_cache(Some("localhost".to_string()));
+    let cache = connect_cache(None);
+
+    match cache {
+        Ok(host) => {
+            println!("Success connect to host : {}", host)
+        }
+        Err(error) => {
+            println!("Error with message : {}", error)
+        }
+    }
+}
+
+#[test]
+fn test_dangling_reference() {
+    let r: &i32;
+    {
+        let x = 5;
+        // r = &x; error
+    }
+    r = &40;
+    println!("{}", r)
+}
+
+fn longest<'a>(value1: &'a str, value2: &'a str) -> &'a str {
+    if value1.len() > value2.len() {
+        value1
+    } else {
+        value2
+    }
+}
+
+#[test]
+fn test_lifetime_annotation() {
+    let value1 = "Eko";
+    let value2 = "Kurniawan";
+    let result = longest(value1, value2);
+    println!("{}", result);
+}
+
+#[test]
+fn test_lifetime_annotation_dangling_reference() {
+    let string1 = String::from("Khannedy");
+    let string2 = String::from("Eko");
+    let result;
+    {
+        result = longest(string1.as_str(), string2.as_str());
+    }
+    println!("{}", result);
+}
+
+struct Student<'a, 'b> {
+    name: &'a str,
+    last_name: &'b str,
+}
+
+impl<'a, 'b> Student<'a, 'b> {
+    fn longest_name(&self, student: &Student<'a, 'b>) -> &'a str {
+        if self.name.len() > student.name.len() {
+            self.name
+        } else {
+            student.name
+        }
+    }
+}
+
+fn longest_student_name<'a, 'b>(student1: &Student<'a, 'b>, student2: &Student<'a, 'b>) -> &'a str {
+    if student1.name.len() > student2.name.len() {
+        student1.name
+    } else {
+        student2.name
+    }
+}
+
+#[test]
+fn test_student() {
+    let student = Student {
+        name: "Eko",
+        last_name: "Khannedy",
+    };
+    println!("{}", student.name);
+    let student2 = Student {
+        name: "Budi",
+        last_name: "Nugraha",
+    };
+    let result = longest_student_name(&student, &student2);
+    println!("{}", result);
+
+    let result = student.longest_name(&student2);
+    println!("{}", result);
+}
+
+struct Teacher<'a, ID>
+where
+    ID: Ord,
+{
+    id: ID,
+    name: &'a str,
+}
+
+#[test]
+fn test_lifetime_annotation_generic() {
+    let teacher: Teacher<i32> = Teacher {
+        id: 10,
+        name: "Eko",
+    };
+    println!("{}", teacher.id);
+    println!("{}", teacher.name);
+}
+
+#[derive(Debug, PartialEq, PartialOrd)]
+struct Company {
+    name: String,
+    location: String,
+    website: String,
+}
+
+#[test]
+fn test_attribute_derive() {
+    let company = Company {
+        name: "Programmer Zaman Now".to_string(),
+        location: "Indonesia".to_string(),
+        website: "https://www.programmerzamannow.com/".to_string(),
+    };
+
+    let company2 = Company {
+        name: "Programmer Zaman Now".to_string(),
+        location: "Indonesia".to_string(),
+        website: "https://www.programmerzamannow.com/".to_string(),
+    };
+
+    println!("{:?}", company);
+
+    let result = company == company2;
+    println!("{}", result);
+
+    let result = company > company2;
+    println!("{}", result);
+}
+
+#[test]
+fn test_box() {
+    let value: Box<i32> = Box::new(10);
+    println!("{}", value);
+    display_number(*value);
+    display_number_reference(&value);
+}
+
+fn display_number(value: i32) {
+    println!("{}", value);
+}
+
+fn display_number_reference(value: &i32) {
+    println!("{}", value);
+}
+
+#[derive(Debug)]
+enum ProductCategory {
+    Of(String, Box<ProductCategory>),
+    End,
+}
+
+#[test]
+fn test_box_enum() {
+    let category = ProductCategory::Of(
+        "Laptop".to_string(),
+        Box::new(ProductCategory::Of(
+            "Dell".to_string(),
+            Box::new(ProductCategory::End),
+        )),
+    );
+    println!("{:?}", category);
+    print_category(&category);
+}
+
+fn print_category(category: &ProductCategory) {
+    println!("{:?}", category);
+}
+
+#[test]
+fn test_dereference() {
+    let value1 = Box::new(10);
+    let value2 = Box::new(20);
+
+    let result: i32 = *value1 * *value2;
+    println!("{}", result);
+}
+
+struct MyValue<T> {
+    value: T,
+}
+
+use std::ops::Deref;
+
+impl<T> Deref for MyValue<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.value
+    }
+}
+
+#[test]
+fn test_dereference_struct() {
+    let value = MyValue { value: 10 };
+    let real_value: i32 = *value;
+    println!("value {}", real_value);
+}
+
+fn say_hello_reference(name: &String) {
+    println!("Hello {}", name);
+}
+
+#[test]
+fn test_deref_reference() {
+    let name = MyValue {
+        value: "Eko".to_string(),
+    };
+    say_hello_reference(&name);
+}
+
+struct Book {
+    title: String,
+}
+
+impl Drop for Book {
+    fn drop(&mut self) {
+        println!("Dropping Book: {}", self.title)
+    }
+}
+
+#[test]
+fn test_drop() {
+    let book = Book {
+        title: "Rust Programming".to_string(),
+    };
+    println!("{}", book.title)
+}
+
+use std::rc::Rc;
+
+enum Brand {
+    Of(String, Rc<Brand>),
+    End,
+}
+
+#[test]
+fn test_multiple_ownership() {
+    let apple: Rc<Brand> = Rc::new(Brand::Of("Apple".to_string(), Rc::new(Brand::End)));
+    println!("Apple reference count : {}", Rc::strong_count(&apple));
+
+    let laptop: Brand = Brand::Of("Laptop".to_string(), Rc::clone(&apple));
+    println!("Apple reference count : {}", Rc::strong_count(&apple));
+
+    {
+        let smartphone: Brand = Brand::Of("Smartphone".to_string(), Rc::clone(&apple));
+        println!("Apple reference count : {}", Rc::strong_count(&apple));
+    }
+
+    println!("Apple reference count : {}", Rc::strong_count(&apple));
+
+    // let apple = ProductCategory::Of("Apple".to_string(), Box::new(ProductCategory::End));
+    // let laptop = ProductCategory::Of("Laptop".to_string(), Box::new(apple));
+    // let smartphone = ProductCategory::Of("Smartphone".to_string(), Box::new(apple));
+}
+
+use std::cell::RefCell;
+use std::cell::RefMut;
+
+#[derive(Debug)]
+struct Seller {
+    name: RefCell<String>,
+    active: RefCell<bool>,
+}
+
+#[test]
+fn test_ref_cell() {
+    let seller = Seller {
+        name: RefCell::new("Eko".to_string()),
+        active: RefCell::new(true),
+    };
+
+    {
+        let mut result: RefMut<String> = seller.name.borrow_mut();
+        *result = "Budi".to_string();
+    }
+
+    println!("{:?}", seller);
 }
